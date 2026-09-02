@@ -1,0 +1,1 @@
+- [Playwright on Replit Nix](playwright-replit-nix.md) — browser tests need both a downloaded browser and explicit native runtime libraries.
