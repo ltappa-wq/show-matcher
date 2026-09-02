@@ -1,6 +1,5 @@
 export type MediaKind = "movie" | "tv";
 export type TitleSource = "catalog" | "tmdb";
-export type SeatCode = "a" | "b";
 
 export type TitleCard = {
   id: string;
@@ -9,4 +8,11 @@ export type TitleCard = {
   kind: MediaKind;
   overview: string;
   source: TitleSource;
+  posterPath: string | null;
 };
+
+export function posterUrl(path: string | null | undefined, size: "w185" | "w342" = "w342"): string | null {
+  if (!path) return null;
+  if (path.startsWith("http")) return path;
+  return `https://image.tmdb.org/t/p/${size}${path.startsWith("/") ? path : `/${path}`}`;
+}
