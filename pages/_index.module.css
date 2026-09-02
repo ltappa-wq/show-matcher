@@ -1,0 +1,8 @@
+.page {
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--foreground);
+  padding: var(--spacing-6) var(--spacing-6) var(--spacing-16);
+  max-width: 1120px;
+  margin: 0 auto;
+}
