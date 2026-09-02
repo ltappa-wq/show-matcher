@@ -1,9 +1,17 @@
 # TogetherWatch
 
-## Title catalog configuration
+Two seats. One catalog. Titles you both actually want to watch.
 
-TogetherWatch loads movie and show metadata through its same-origin server endpoint and persists normalized results in `.data/title-cache.json`.
+Live build is on Floot (TogetherWatch). This repo is a GitHub snapshot of the app-specific source.
 
-Configure either `TMDB_API_KEY` or `TMDB_ACCESS_TOKEN` as a **server-side Replit Secret** in both the development and published environments. Never use a `VITE_` prefix: Vite exposes variables with that prefix in browser assets.
+## What works
 
-The browser never receives the credential. Cached titles continue to work if TMDB is temporarily unavailable; uncached titles show a clear configuration or upstream-service warning and fall back to the curated local catalog.
+- Catalog grid with Seat A / Seat B picks
+- Match list = intersection of both seats
+- `GET /_api/titles` loads normalized titles from Postgres, curated catalog fallback
+- `POST /_api/search` searches TMDB server-side and upserts titles
+- `GET|POST /_api/picks` persists seat picks
+
+## Secrets
+
+Configure `TMDB_API_KEY` and/or `TMDB_ACCESS_TOKEN` as **server-side** secrets only. Never `VITE_`.
