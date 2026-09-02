@@ -1,14 +1,16 @@
 import { z } from "zod";
 import superjson from "superjson";
-import type { TitleCard } from "../helpers/titleTypes";
 
-export const schema = z.object({ q: z.string().min(1) });
+export const schema = z.object({
+  name: z.string().trim().min(1).max(60).optional(),
+  displayName: z.string().trim().min(1).max(40),
+});
 export type InputType = z.infer<typeof schema>;
-export type OutputType = { titles: TitleCard[]; warning: string | null; cached: boolean };
+export type OutputType = { roomId: string; code: string; name: string; memberId: string; displayName: string };
 
-export const postSearch = async (body: InputType, init?: RequestInit): Promise<OutputType> => {
+export const postRooms = async (body: InputType, init?: RequestInit): Promise<OutputType> => {
   const validatedInput = schema.parse(body);
-  const result = await fetch(`/_api/search`, {
+  const result = await fetch(`/_api/rooms`, {
     method: "POST",
     body: superjson.stringify(validatedInput),
     ...init,
