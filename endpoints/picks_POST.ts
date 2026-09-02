@@ -4,25 +4,22 @@ import { db } from "../helpers/db";
 
 export async function handle(request: Request) {
   try {
-    const json = superjson.parse(await request.text());
-    const input = schema.parse(json);
-    if (input.picked) {
-      await db
-        .insertInto("picks")
-        .values({ seat: input.seat, titleId: input.titleId })
-        .onConflict((oc) => oc.columns(["seat", "titleId"]).doNothing())
-        .execute();
-    } else {
-      await db
-        .deleteFrom("picks")
-        .where("seat", "=", input.seat)
-        .where("titleId", "=", input.titleId)
-        .execute();
+    const input = schema.parse(superjson.parse(await request.text()));
+    const member = await db.selectFrom("roomMembers").selectAll()
+      .where("id", "=", input.memberId).where("roomId", "=", input.roomId).executeTakeFirst();
+    if (!member) {
+      return new Response(superjson.stringify({ error: "You are not in this room." }), { status: 403 });
     }
-    const rows = await db.selectFrom("picks").select(["seat", "titleId"]).execute();
-    const a = rows.filter((r) => r.seat === "a").map((r) => r.titleId);
-    const b = rows.filter((r) => r.seat === "b").map((r) => r.titleId);
-    return new Response(superjson.stringify({ a, b } satisfies OutputType));
+    if (input.picked) {
+      await db.insertInto("roomPicks").values({
+        roomId: input.roomId, memberId: input.memberId, titleId: input.titleId,
+      }).onConflict((oc) => oc.columns(["memberId", "titleId"]).doNothing()).execute();
+    } else {
+      await db.deleteFrom("roomPicks").where("memberId", "=", input.memberId).where("titleId", "=", input.titleId).execute();
+    }
+    const members = await db.selectFrom("roomMembers").select(["id", "displayName"]).where("roomId", "=", input.roomId).orderBy("createdAt", "asc").execute();
+    const picks = await db.selectFrom("roomPicks").select(["memberId", "titleId"]).where("roomId", "=", input.roomId).execute();
+    return new Response(superjson.stringify({ members, picks } satisfies OutputType));
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to save pick";
     return new Response(superjson.stringify({ error: message }), { status: 400 });
