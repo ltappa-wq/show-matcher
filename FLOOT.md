@@ -1,3 +1,3 @@
-Live app: Floot project TogetherWatch.
-TMDB keys and room data stay in Floot. This repo is an export, not the runtime.
-Snapshot includes rooms, poster cache, and search-query cache as of 2026-09-02.
+Live app: Floot project TogetherWatch (Pro).
+Exact source snapshot pulled 2026-09-02 after the Pro upgrade.
+TMDB keys stay in Floot secrets. This repo is an export, not the runtime.
